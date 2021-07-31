@@ -1,48 +1,228 @@
-function AddPerson(props) {
-    return <div>
-        <h1>Hello</h1>
-        <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Accordion Item #1
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Accordion Item #2
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Accordion Item #3
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+import React, { Component } from "react";
 
-    
+import personService from "./services/person.service";
+
+
+export default class AddPerson extends Component {
+    constructor(props) {
+        super(props);
+        this.onChangeName = this.onChangeName.bind(this);
+        this.onChangeSurname = this.onChangeSurname.bind(this);
+        this.onChangeEmail = this.onChangeEmail.bind(this);
+        this.onChangeTelephone = this.onChangeTelephone.bind(this);
+        this.onChangeGender = this.onChangeGender.bind(this);
+        this.onChangeDoB = this.onChangeDoB.bind(this);
+        this.onChangeComments = this.onChangeComments.bind(this);
+
+        this.state = {
+            id: null,
+            name: "",
+            surname: "",
+            email: "",
+            telephone: "",
+            gender: "",
+            dob: "",
+            comments: "",
+            posted: false,
+        };
+    }
+
+    onChangeName(e) {
+        this.setState({
+            name: e.target.value
+        });
+    }
+
+    onChangeSurname(e) {
+        this.setState({
+            surname: e.target.value
+        });
+    }
+
+    onChangeEmail(e) {
+        this.setState({
+            email: e.target.value
+        });
+    }
+
+    onChangeTelephone(e) {
+        this.setState({
+            telephone: e.target.value
+        });
+    }
+
+    onChangeGender(e) {
+        this.setState({
+            gender: e.target.value
+        });
+    }
+
+    onChangeDoB(e) {
+        this.setState({
+            dob: e.target.value
+        });
+    }
+    onChangeComments(e) {
+        this.setState({
+            comments: e.target.value
+        });
+    }
+
+    savePerson() {
+        var data = {
+            name: this.state.name,
+            surname: this.state.surname,
+            email: this.state.email,
+            telephone: this.state.telephone,
+            gender: this.state.gender,
+            dob: this.state.dob,
+            comments: this.state.comments
+        };
+        personService.create(data)
+            .then(response => {
+                this.setState({
+                    id: response.data.id,
+                    name: response.data.name,
+                    surname: response.data.surname,
+                    email: response.data.email,
+                    telephone: response.data.telephone,
+                    gender: response.data.gender,
+                    dob: response.data.dob,
+                    comments: response.data.comments,
+
+                    posted: true
+
+                });
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+    newPerson() {
+        this.setState({
+            id: null,
+            name: this.state.name,
+            surname: this.state.surname,
+            email: this.state.email,
+            telephone: this.state.telephone,
+            gender: this.state.gender,
+            dob: this.state.dob,
+            comments: this.state.comments,
+
+            posted: false
+        })
+    }
+
+    render() {
+        return (
+            <div className="submit-form" >
+                {
+                    this.state.submitted ? (
+                        <div>
+                            <h4>You submitted successfully!</h4>
+                            <button className="btn btn-success" onClick={this.newPerson}>
+                                Add
+                            </button>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="form-group">
+                                <label htmlFor="name">Name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="name"
+                                    required
+                                    value={this.state.Name}
+                                    onChange={this.onChangeName}
+                                    name="name"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="Surname">Surname</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="Surname"
+                                    required
+                                    value={this.state.Surname}
+                                    onChange={this.onChangeSurname}
+                                    name="surname"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="Email">Email</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="Email"
+                                    required
+                                    value={this.state.email}
+                                    onChange={this.onChangeEmail}
+                                    name="email"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="Telephone">Telephone</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="Telephone"
+                                    required
+                                    value={this.state.telephone}
+                                    onChange={this.onChangeTelephone}
+                                    name="telephone"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="Gender">Gender</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="Gender"
+                                    required
+                                    value={this.state.Gender}
+                                    onChange={this.onChangeGender}
+                                    name="gender"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="dob">Date of Birth</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="dob"
+                                    required
+                                    value={this.state.dob}
+                                    onChange={this.onChangeDoB}
+                                    name="dob"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="Comments">Comments</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="Comments"
+                                    required
+                                    value={this.state.Comments}
+                                    onChange={this.onChangeComments}
+                                    name="comments"
+                                />
+                            </div>
+                            
+
+                            <button onClick={this.savePerson} className="btn btn-success">
+                                Submit
+                            </button>
+                        </div>
+                    )
+                }
+            </div>
+        );
+    }
 }
 
 
-export default AddPerson
